@@ -1,9 +1,9 @@
 # Spatial-temporal Consistency Constraint for Depth and Ego-motion Estimation of Laparoscopic Images
 
 <!-- ![Image](https://github.com/BeileiCui/EndoDAC/blob/main/assets/main.jpg) -->
-![Image](https://github.com/nanasylum/spatialtemporal/img/our_work.png)\
+![Image](https://github.com/nanasylum/spatialtemporal/blob/main/img/our_work.png)\
 our network architecture is:\
-![Image](https://github.com/nanasylum/spatialtemporal/img/arch.jpg)
+![Image](https://github.com/nanasylum/spatialtemporal/blob/main/img/arch.jpg)
 
 
 <!-- ### [__[arxiv]__](http://arxiv.org/abs/2405.08672) -->
