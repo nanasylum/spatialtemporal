@@ -57,10 +57,12 @@ If you want to evaluate your model:
 ```
 python evaluate_pose.py --data_path PATH_TO_YOUR_DATA --load_weights_folder PATH_TO_YOUR_MODEL --eval_mono
 ```
+### DepthMap generation
 If you want to generate your depthmap:
 ```
 python generate_pred.py
 ```
+### Point cloud map generation
 If you want to generate point cloud map:
 ```
 python generate_pred_nocolor.py
