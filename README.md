@@ -2,6 +2,7 @@
 
 <!-- ![Image](https://github.com/BeileiCui/EndoDAC/blob/main/assets/main.jpg) -->
 ![Image](https://github.com/nanasylum/spatialtemporal/blob/main/img/our_work.png)\
+![Image](./img/our_work.png)\
 our network architecture is:\
 ![Image](https://github.com/nanasylum/spatialtemporal/blob/main/img/arch.jpg)
 
