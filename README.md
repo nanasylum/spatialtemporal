@@ -66,14 +66,11 @@ python generate_pred.py
 If you want to generate point cloud map:
 ```
 python generate_pred_nocolor.py
-```
-```
+
 cd depth2pointcloud
-```
-```
+
 python generate_depthmap.py
-```
-```
+
 python generate_pc_rgb.py
 ```
 
