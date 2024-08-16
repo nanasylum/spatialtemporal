@@ -1,6 +1,6 @@
 # Spatial-temporal Consistency Constraint for Depth and Ego-motion Estimation of Laparoscopic Images
 
-![Image](./img/our_work.png)\
+![Image](./img/our_work.png)
 ## Our network architecture
 ![Image](./img/arch.jpg)
 
