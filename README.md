@@ -1,16 +1,8 @@
 # Spatial-temporal Consistency Constraint for Depth and Ego-motion Estimation of Laparoscopic Images
 
-<!-- ![Image](https://github.com/BeileiCui/EndoDAC/blob/main/assets/main.jpg) -->
-![Image](https://github.com/nanasylum/spatialtemporal/blob/main/img/our_work.png)\
 ![Image](./img/our_work.png)\
 our network architecture is:\
-![Image](https://github.com/nanasylum/spatialtemporal/blob/main/img/arch.jpg)
-
-
-<!-- ### [__[arxiv]__](http://arxiv.org/abs/2405.08672) -->
-
-<!-- * 2024-05-14 Our paper has been early accepted (top 11%) by MICCAI 2024!
-* 2024-05-15 arxiv version is online. -->
+![Image](./img/arch.jpg)\
 
 ## Abstract
 Estimating depth and ego-motion are crucial tasks for laparoscopic navigation and robotic-assisted surgery. Most current self-supervised methods involve warping one frame onto an adjacent frame using the estimated depth and camera pose. The photometric loss between the estimated and original frames then serves as the training signal. However, these methods encounter major challenges due to non-Lambertian reflection regions and the textureless surfaces of organs, leading to significant performance degradation and scale ambiguity in monocular depth estimation. In this paper, we introduce a network that predicts depth and ego-motion using spatial-temporal consistency constraints. Spatial consistency is derived from the left and right views of the stereo laparoscopic image pairs, while temporal consistency comes from consecutive frames. To enhance the understanding of semantic information in surgical scenes, we employ the Swin Transformer as the encoder and decoder for depth estimation, due to its superior semantic segmentation capabilities. To address issues of illumination variance and scale ambiguity, we incorporate a SIFT loss term to eliminate oversaturated regions in laparoscopic images. Our method is evaluated on the SCARED dataset and shows remarkable results. 
