@@ -63,16 +63,6 @@ class Trainer:
         self.models["depth"].to(self.device)
         self.parameters_to_train += list(self.models["depth"].parameters())
 
-        # self.models["encoder"] = resnet_encoder.ResnetEncoder(
-        #     self.opt.num_layers, self.opt.weights_init == "pretrained")  # 18
-        # self.models["encoder"].to(self.device)
-        # self.parameters_to_train += list(self.models["encoder"].parameters())
-
-        # self.models["depth"] = depth_decoder.DepthDecoder(
-        #     self.models["encoder"].num_ch_enc, self.opt.scales)
-        # self.models["depth"].to(self.device)
-        # self.parameters_to_train += list(self.models["depth"].parameters())
-
         self.models["position_encoder"] = encoders.ResnetEncoder(
             self.opt.num_layers, self.opt.weights_init == "pretrained", num_input_images=2)  # 18
         self.models["position_encoder"].to(self.device)
@@ -151,7 +141,6 @@ class Trainer:
         print("Training is using:\n  ", self.device)
 
         # data
-        # datasets_dict = {"endovis": datasets.SCAREDRAWDataset}
         datasets_dict = {"endovis": datasets.scared_dataset.SCAREDRAWDataset}
         self.dataset = datasets_dict[self.opt.dataset]
 
@@ -700,6 +689,46 @@ class Trainer:
             reprojection_loss = 0.85 * ssim_loss + 0.15 * l1_loss
 
         return reprojection_loss
+    
+    def sift_loss_calculation(self, pred, target, with_pt=False): 
+
+        assert pred.shape == target.shape, "Pred and target images must have the same shape."  
+        b, c, h, w = pred.shape  
+        threshold = h // 16 * w // 16  
+        losses = np.zeros((3, b, h, w))  
+        mask = np.zeros((b, h, w), dtype=bool)  
+        
+        pred =  255* pred.mean(1).detach().cpu().numpy().astype("uint8")
+        target = (255* target.mean(1).detach().cpu().numpy()).astype("uint8")
+
+        sift = cv2.SIFT_create()  
+        
+        for i in range(b):  
+            kp1, des1 = sift.detectAndCompute(pred[i], None)  
+            kp2, des2 = sift.detectAndCompute(target[i], None)
+
+            
+            
+            if min(len(kp1), len(kp2)) > threshold:  
+                for j, (keypoint1, descriptor1) in enumerate(zip(kp1, des1)):  
+                    # Find the best match in target descriptors  
+                    distances = np.linalg.norm(des2 - descriptor1, axis=1)  
+                    min_idx = np.argmin(distances)  
+                    keypoint2 = kp2[min_idx]  
+                    descriptor2 = des2[min_idx]  
+                        
+                    x, y = round(keypoint1.pt).astype(int)  
+                    x_star, y_star = round(keypoint2.pt).astype(int)  
+                        
+                    mask[i, x, y] = True  
+                    losses[0, i, x, y] = np.mean(np.abs(descriptor1 - descriptor2)) / 255  
+                    losses[1, i, x, y] = np.abs(x - x_star) / w  
+                    losses[2, i, x, y] = np.abs(y - y_star) / h  
+            else:  
+                mask[i, 0] = True        
+                losses = np.zeros((3, b, h, w))
+
+        return np.sum(losses[0]) / np.sum(mask) 
 
     def compute_losses(self, inputs, outputs):
 
@@ -728,8 +757,7 @@ class Trainer:
                     torch.abs(outputs[("refined", scale, frame_id)] - outputs[("registration", 0, frame_id)].detach()).mean(1, True) * occu_mask_backward).sum() / occu_mask_backward.sum()
                 loss_cvt += get_smooth_bright(
                     outputs[("transform", "high", scale, frame_id)], inputs[("color", 0, 0)], outputs[("registration", scale, frame_id)].detach(), occu_mask_backward)
-                loss_sift_0 += self.compute_reprojection_loss(outputs[("registration", 0, frame_id)], inputs[("color", 0, 0)]* occu_mask_backward).sum() / occu_mask_backward.sum()
-
+                loss_sift_0 += (self.sift_loss_calculation(outputs[("registration", 0, frame_id)], inputs[("color", 0, 0)]) * occu_mask_backward).sum() / occu_mask_backward.sum()
                 # Pose_L0->L1 == Pose_R0->R1
                 loss_spatial_0 += (torch.abs(outputs[("cam_T_cam_r", 0, frame_id)] - outputs[("cam_T_cam", 0, frame_id)]).sum())
             mean_disp = disp.mean(2, True).mean(3, True)
